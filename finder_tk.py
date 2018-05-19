@@ -43,10 +43,10 @@ def finder(target, folder):
     if (target.strip() != ""):
         for element in os.scandir(folder):
             if element.is_file(): # file
-                if (element.name.find(target) != -1):
+                if (element.name.lower().find(target) != -1):
                     results.append("> file: "+folder+"\\"+element.name)
             else: # folder
-                if (element.name.find(target) != -1):
+                if (element.name.lower().find(target) != -1):
                     results.append("> folder: "+folder+"\\"+element.name)
                 if (element.name not in black_list):
                     finder(target, element.path)
