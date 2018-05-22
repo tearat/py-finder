@@ -2,6 +2,8 @@ import os
 from tkinter import *
 from tkinter import messagebox
 
+black_list = [".git","node_modules"]
+
 ##
 
 root = Tk()
@@ -11,33 +13,29 @@ root.title('py finder')
 label_1 = Label(root, text="target:")
 input_target = Entry()
 button = Button( root, text="find", command=lambda: click(1) )
+scrollbar = Scrollbar(root)
+listbox = Listbox(root)
 
-label_results = Label(root, text="results:")
-label_test = Label(root, text="test")
+listbox.config(yscrollcommand=scrollbar.set)
+scrollbar.config(command=listbox.yview)
 
-label_1.pack()
+label_1.pack(fill=BOTH)
 input_target.pack()
 button.pack()
-label_results.pack()
+scrollbar.pack(side=RIGHT, fill=Y)
+listbox.pack(fill=BOTH, expand=1)
 
 ##
-
-results = []
-black_list = [".git"]
 
 def click(event):
     global results
     results = []
-    
+    listbox.delete(0, END)
     finder( input_target.get().lower(), os.getcwd() )
-    label_test.grid_remove()
-    results_str = ""
     for line in results:
-        results_str += line + "\n"
+        listbox.insert(END, line)
     if not results:
-        results_str = "nothing"
-    label_test.configure(text=str(results_str))
-    label_test.pack()
+        listbox.insert(END, "nothing")
 
 def finder(target, folder):
     if (target.strip() != ""):
@@ -46,9 +44,9 @@ def finder(target, folder):
                 if (element.name.lower().find(target) != -1):
                     results.append("> file: "+folder+"\\"+element.name)
             else: # folder
-                if (element.name.lower().find(target) != -1):
-                    results.append("> folder: "+folder+"\\"+element.name)
                 if (element.name not in black_list):
+                    if (element.name.lower().find(target) != -1):
+                        results.append("> folder: "+folder+"\\"+element.name)
                     finder(target, element.path)
     else:
         results.append("empty target")
